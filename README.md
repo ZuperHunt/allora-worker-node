@@ -108,8 +108,8 @@ allorad version
 ```
 ## Menjalankan Allora Worker Node
 Ada dua campaign worker node yang dapat dikerjakan sekarang
-- [Run A Model Predicting Prices In The Next 10 minutes](https://github.com/ZuperHunt/Allora-Worker-Node/edit/main/README.md#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-10-minutes-campaign)
-- [Run A Model Predicting Prices In The Next 24 Hours](https://github.com/ZuperHunt/Allora-Worker-Node/edit/main/README.md#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-24-hours-campaign)
+- [Run A Model Predicting Prices In The Next 10 minutes](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-10-minutes-campaign)
+- [Run A Model Predicting Prices In The Next 24 Hours](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-24-hours-campaign)
 
 > [!NOTE]
 > Tutorial ini akan melingkupi cara mengerjakan dua campaign tersebut, tetapi tidak disarankan untuk dijalankan pada VPS/Local yang sama sekaligus, gunakan 1 VPS untuk 1 campaign
