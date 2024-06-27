@@ -108,13 +108,13 @@ allorad version
 ```
 ## Menjalankan Allora Worker Node
 Ada dua campaign worker node yang dapat dikerjakan sekarang
-- [Run A Model Predicting Prices In The Next 10 minutes](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-10-minutes-campaign)
-- [Run A Model Predicting Prices In The Next 24 Hours](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-24-hours-campaign)
+- [Run A Model Predicting Prices In The Next 24 Hours](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-10-minutes-campaign)
+- [Run A Model Predicting Prices In The Next 10 minutes](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-24-hours-campaign)
 
 > [!NOTE]
 > Tutorial ini akan melingkupi cara mengerjakan dua campaign tersebut, tetapi tidak disarankan untuk dijalankan pada VPS/Local yang sama sekaligus, gunakan 1 VPS untuk 1 campaign
 
-### Allora Worker Node for Run A Model Predicting Prices In The Next 10 minutes Campaign
+### Allora Worker Node for Run A Model Predicting Prices In The Next 24 Hours Campaign
 #### Tambah Wallet ke Allora Appchain CLI
 - Recover wallet kalau kalian punya phrasenya
 ```
@@ -352,7 +352,7 @@ Jika mendapat output seperti gambar di bawah ini, selamat, node sudah berjalan d
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/066bc481-e939-4261-8d73-343707976d27)
 
 
-### Allora Worker Node for Run A Model Predicting Prices In The Next 24 Hours Campaign
+### Allora Worker Node for Run A Model Predicting Prices In The Next 10 minutes Campaign
 #### Tambah Wallet ke Allora Appchain CLI
 - Recover wallet kalau kalian punya phrasenya
 ```
@@ -697,6 +697,10 @@ Join komunitas [Discord ZuperHunt](https://t.co/n7TeWVlA48) jika kamu ada pertan
 
 * 0.0.1
     * Initial Release
+* 0.0.2
+    * Fix wrong embedded link
+* 0.0.3
+    * Fix switched heading title
 
 ## Acknowledgments
 
