@@ -37,7 +37,10 @@ Hal yang diperlukan sebelum menjalankan worker node:
 su root
 
 # Update APT
-sudo apt-get update && sudo apt-get install -y make gcc
+sudo apt-get update
+
+# Install mmake dan gcc
+sudo apt-get install -y make gcc
 
 # Install package yang diperlukan untuk instalasi docker
 sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
@@ -70,6 +73,9 @@ echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> $HOME/.bash_profile &
 
 # Memuat ulang file .bash_profile ke dalam sesi shell saat ini
 source .bash_profile
+
+# Check versi GoLang untuk memastikan kalau sudah terinstall
+go version
 ```
 ### Python
 > [!NOTE]
@@ -108,8 +114,8 @@ allorad version
 ```
 ## Menjalankan Allora Worker Node
 Ada dua campaign worker node yang dapat dikerjakan sekarang
-- [Run A Model Predicting Prices In The Next 24 Hours](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-10-minutes-campaign)
-- [Run A Model Predicting Prices In The Next 10 minutes](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-24-hours-campaign)
+- [Run A Model Predicting Prices In The Next 24 Hours](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-24-hours-campaign)
+- [Run A Model Predicting Prices In The Next 10 minutes](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-10-minutes-campaign)
 
 > [!NOTE]
 > Tutorial ini akan melingkupi cara mengerjakan dua campaign tersebut, tetapi tidak disarankan untuk dijalankan pada VPS/Local yang sama sekaligus, gunakan 1 VPS untuk 1 campaign
@@ -140,6 +146,11 @@ cd $HOME && git clone https://github.com/allora-network/basic-coin-prediction-no
 - Buat direktori untuk node worker
 ```
 cd basic-coin-prediction-node && mkdir worker-data && mkdir head-data
+```
+- Beri izin modifikasi untuk direktorinya
+```
+sudo chmod -R 777 worker-data
+sudo chmod -R 777 head-data
 ```
 - Buat head dan worker keys
 ```
@@ -378,6 +389,11 @@ cd $HOME && git clone https://github.com/allora-network/basic-coin-prediction-no
 - Buat direktori untuk node worker
 ```
 cd basic-coin-prediction-node && mkdir worker-data && mkdir head-data
+```
+- Beri izin modifikasi untuk direktorinya
+```
+sudo chmod -R 777 worker-data
+sudo chmod -R 777 head-data
 ```
 - Buat head dan worker keys
 ```
@@ -701,6 +717,10 @@ Join komunitas [Discord ZuperHunt](https://t.co/n7TeWVlA48) jika kamu ada pertan
     * Fix wrong embedded link
 * 0.0.3
     * Fix switched heading title
+* 0.04
+    * Fix APT update command
+    * Add golang check version
+    * Fix switched heading title (Again!!!)
 
 ## Acknowledgments
 
