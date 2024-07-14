@@ -1,5 +1,7 @@
 Penulis: [0xraia](https://x.com/0xraia)
 
+
+
 # Pengenalan
 Bab ini berisi pengenalan mengenai Allora Network
 
@@ -8,6 +10,7 @@ Bab ini berisi pengenalan mengenai Allora Network
 
 ### Investor
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/46a1c968-3355-41d0-9013-e7ee93967a7b)
+
 
 
 # Tutorial Allora Worker Node
@@ -28,13 +31,18 @@ Syarat menjalankan Allora Worker Node:
   
 > [!NOTE]
 > Tutorial ini dibuat menggunakan sistem operasi Linux (Ubuntu), untuk sistem operasi lainnya mungkin akan sedikit berbeda
+
 ## Dependencies
 Hal yang diperlukan sebelum menjalankan worker node:
+
 ### Docker
 #### Update APT
 ```
-# Masuk ke root
+# Masuk ke user root
 su root
+
+# Pindah ke direktori root
+cd
 
 # Update APT
 sudo apt-get update
@@ -59,6 +67,7 @@ apt-cache policy docker-ce
 # Install Docker
 sudo apt install docker-ce -y
 ```
+
 ### GoLang
 #### Install GoLang
 ```
@@ -77,6 +86,7 @@ source .bash_profile
 # Check versi GoLang untuk memastikan kalau sudah terinstall
 go version
 ```
+
 ### Python
 > [!NOTE]
 > Beberapa sistem operasi sudah terinstall Python secara default, check terlebih dahulu menggunakan `python3 --version` atau `python --version`, jika terdapat output versi dari Python maka Python sudah terinstall di sistem operasi anda dan dapat skip tahap ini
@@ -88,6 +98,7 @@ sudo apt install python3
 # Check versi Python untuk memastikan kalau sudah terinstall
 python3 --version
 ```
+
 ### PIP
 #### Install PIP
 ```
@@ -97,11 +108,12 @@ sudo apt install python3-pip
 # Check versi PIP untuk memastikan kalau sudah terinstall
 pip3 --version
 ```
+
 ### Allora Appchain CLI
 #### Install Allora Appchain CLI
 ```
 # Clone repository Allora Appchain CLI
-git clone -b v0.2.7 https://github.com/allora-network/allora-chain.git
+git clone -b v0.2.14 https://github.com/allora-network/allora-chain.git
 
 # Install Allora Appchain CLI
 cd allora-chain && make all
@@ -112,7 +124,8 @@ cd
 # Check versi dari Allora Appchain CLI
 allorad version
 ```
-## Menjalankan Allora Worker Node
+
+## Allora Worker Node
 Ada dua campaign worker node yang dapat dikerjakan sekarang
 - [Run A Model Predicting Prices In The Next 24 Hours (Using Linear Model)](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-24-hours-campaign)
 - [Run A Model Predicting Prices In The Next 10 minutes (Using HuggingFace Model)](https://github.com/ZuperHunt/Allora-Worker-Node#allora-worker-node-for-run-a-model-predicting-prices-in-the-next-10-minutes-campaign)
@@ -120,17 +133,19 @@ Ada dua campaign worker node yang dapat dikerjakan sekarang
 > [!NOTE]
 > Tutorial ini akan melingkupi cara mengerjakan dua campaign tersebut, tetapi tidak disarankan untuk dijalankan pada VPS/Local yang sama sekaligus, gunakan 1 VPS untuk 1 campaign
 
-### Allora Worker Node for Run A Model Predicting Prices In The Next 24 Hours Campaign
-#### Tambah Wallet ke Allora Appchain CLI
-- Recover wallet kalau kalian punya phrasenya
+## Allora Worker Node for Run A Model Predicting Prices In The Next 24 Hours Campaign
+
+### Tambah Wallet ke Allora Appchain CLI
+- Recover wallet kalau kalian punya wallet phrasenya
 ```
 allorad keys add --recover IsiPakeNamaWalletElo
 ```
-- Buat baru kalau tidak punya phrasenya
+- Buat baru kalau tidak punya wallet phrasenya (JANGAN LUPA SIMPAN MNEMONIC PHRASENYA!!!)
 ```
 allorad keys add IsiPakeNamaWalletElo
 ```
-#### Ambil Faucet
+
+### Ambil Faucet
 - Check address kamu dengan menjalankan command ini
 ```
 allorad keys list
@@ -138,47 +153,40 @@ allorad keys list
 - Pergi ke [sini](https://faucet.edgenet.allora.network/) untuk faucet token
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/f71f5c54-3556-4ca8-91e8-1f4fa5546bad)
 
-#### Install Worker Node
-- Clone repository yang akan menjadi basis node kita
+- Cek Balance dengan Import mnemonic phrasenya ke wallet IBC, disini saya menggunakan Keplr lalu connect ke [explorer](https://explorer.edgenet.allora.network/allora-edgenet)
+![image](https://github.com/user-attachments/assets/b936df8a-4a58-457e-b05e-d8eb9c187de8)
+
+### Install Worker Node
 ```
+# Clone repository yang akan menjadi basis node kita
 cd $HOME && git clone https://github.com/allora-network/basic-coin-prediction-node
-```
-- Buat direktori untuk node worker
-```
+
+# Buat direktori untuk node worker
 cd basic-coin-prediction-node && mkdir worker-data && mkdir head-data
-```
-- Beri izin modifikasi untuk direktorinya
-```
+
+# Beri izin modifikasi untuk direktorinya
 sudo chmod -R 777 worker-data
 sudo chmod -R 777 head-data
-```
-- Buat head dan worker keys
-```
+
 # Membuat Head Keys
 sudo docker run -it --entrypoint=bash -v ./head-data:/data alloranetwork/allora-inference-base:latest -c "mkdir -p /data/keys && (cd /data/keys && allora-keys)"
 
 # Membuat Worker Keys
 sudo docker run -it --entrypoint=bash -v ./worker-data:/data alloranetwork/allora-inference-base:latest -c "mkdir -p /data/keys && (cd /data/keys && allora-keys)"
-```
-- Lihat Head Keys ID
-```
+
+# Lihat Head Keys ID
 cat head-data/keys/identity
 ```
+- Tampilan Head Keys ID akan seperti ini, Simpan Head Keys ID tersebut, karena akan digunakan untuk tahap selanjutnya 
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/3e6be37f-21d9-4c62-8c83-22fd79483b8a)
 
-Simpan keys ID tersebut, karena akan digunakan untuk tahap selanjutnya
-
-#### Deploy Worker Node
+### Deploy Worker Node
 - Hapus existing docker compose lalu buat kembali
 ```
 rm -rf docker-compose.yml && nano docker-compose.yml
 ```
-- Setup Docker Compose
-
-Isi docker compose dengan kode di bawah. Perhatikan pada section worker ganti `head-id` dengan ID yang disimpan tadi dan `WALLET_SEED_PHRASE` dengan phrase wallet kalian
-
+- Isi docker compose dengan kode di bawah. Perhatikan pada section worker ganti `head-id` dengan ID yang disimpan tadi dan `WALLET_SEED_PHRASE` dengan phrase wallet kalian, kemudian simpan dengan memencet CTRL + X lalu pencet Y dan kemudian ENTER 
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/3b64f691-3695-409d-9823-8906403b0440)
-
 ```
 version: '3'
 
@@ -198,7 +206,7 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/inference/ETH"]
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 12
     volumes:
       - ./inference-data:/app/data
@@ -250,7 +258,7 @@ services:
           --topic=1 \
           --allora-chain-key-name=testkey \
           --allora-chain-restore-mnemonic='WALLET_SEED_PHRASE' \
-          --allora-node-rpc-address=https://allora-rpc.edgenet.allora.network/ --allora-chain-topic-id=1
+          --allora-node-rpc-address=https://allora-rpc.edgenet.allora.network/ --allora-chain-topic-id=allora-topic-1-worker
     volumes:
       - ./worker-data:/data
     working_dir: /data
@@ -305,35 +313,29 @@ volumes:
   worker-data:
   head-data:
 ```
-Simpan dengan memencet CTRL + X lalu pencet Y dan kemudian ENTER 
 - Run Worker node
-
-Build worker node
 ```
+# Build worker node
 docker compose build
-```
-Jalankan worker node
-```
+
+# Jalankan worker node
 docker compose up -d
 ```
 
-#### Monitoring Worker Node
-- Check docker container yang berjalan
+### Monitoring Worker Node
+- Check docker container yang berjalan dan ambil Container ID yang worker node (Hal ini bisa digunakan untuk mengecek node lain seperti head ataupun inference)
 ```
 docker ps
 ```
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/0ef3fde5-c5cf-4af1-983e-18af2fb8fbba)
-Ambil Container ID yang worker node
-- Check logs worker node
-
-Ganti `CONTAINER_ID` menjadi Container ID dari worker node
+- Check logs worker node dan ganti `CONTAINER_ID` menjadi Container ID dari worker node
 ```
 docker logs -f CONTAINER_ID
 ```
-Akan muncul tampilan seperti berikut, kalian bisa monitoring worker node seperti ada yang error pada node ataupun hanya sekedar mengecek kalau node masih berjalan
+- Akan muncul tampilan seperti berikut, kalian bisa monitoring worker node seperti ada yang error pada node ataupun hanya sekedar mengecek kalau node masih berjalan
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/8b17609d-7958-425e-8171-d272ddfbf9c7)
 
-#### Testing Request Worker Node
+### Testing Request Worker Node
 - Jalankan request messages dibawah ini
 ```
 curl --location 'http://localhost:6000/api/v1/functions/execute' \
@@ -355,25 +357,26 @@ curl --location 'http://localhost:6000/api/v1/functions/execute' \
             }
         ],
         "number_of_nodes": -1,
-        "timeout": 2
+        "timeout": 10
     }
 }'
 ```
-Jika mendapat output seperti gambar di bawah ini, selamat, node sudah berjalan dan terhubung ke Allora Network Chain
+- Jika mendapat output seperti gambar di bawah ini, selamat, node sudah berjalan dan terhubung ke Allora Network Chain
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/066bc481-e939-4261-8d73-343707976d27)
 
+## Allora Worker Node for Run A Model Predicting Prices In The Next 10 minutes Campaign
 
-### Allora Worker Node for Run A Model Predicting Prices In The Next 10 minutes Campaign
-#### Tambah Wallet ke Allora Appchain CLI
-- Recover wallet kalau kalian punya phrasenya
+### Tambah Wallet ke Allora Appchain CLI
+- Recover wallet kalau kalian punya wallet phrasenya
 ```
 allorad keys add --recover IsiPakeNamaWalletElo
 ```
-- Buat baru kalau tidak punya phrasenya
+- Buat baru kalau tidak punya wallet phrasenya (JANGAN LUPA SIMPAN MNEMONIC PHRASENYA!!!)
 ```
 allorad keys add IsiPakeNamaWalletElo
 ```
-#### Ambil Faucet
+
+### Ambil Faucet
 - Check address kamu dengan menjalankan command ini
 ```
 allorad keys list
@@ -381,28 +384,30 @@ allorad keys list
 - Pergi ke [sini](https://faucet.edgenet.allora.network/) untuk faucet token
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/f71f5c54-3556-4ca8-91e8-1f4fa5546bad)
 
-#### Install Worker Node
-- Clone repository yang akan menjadi basis node kita
+- Cek Balance dengan Import mnemonic phrasenya ke wallet IBC, disini saya menggunakan Keplr lalu connect ke [explorer](https://explorer.edgenet.allora.network/allora-edgenet)
+![image](https://github.com/user-attachments/assets/b936df8a-4a58-457e-b05e-d8eb9c187de8)
+
+### Install Worker Node
 ```
+# Clone repository yang akan menjadi basis node kita
 cd $HOME && git clone https://github.com/allora-network/basic-coin-prediction-node
-```
-- Buat direktori untuk node worker
-```
+
+# Buat direktori untuk node worker
 cd basic-coin-prediction-node && mkdir worker-data && mkdir head-data
-```
-- Beri izin modifikasi untuk direktorinya
-```
+
+# Beri izin modifikasi untuk direktorinya
 sudo chmod -R 777 worker-data
 sudo chmod -R 777 head-data
-```
-- Buat head dan worker keys
-```
+
 # Membuat Head Keys
 sudo docker run -it --entrypoint=bash -v ./head-data:/data alloranetwork/allora-inference-base:latest -c "mkdir -p /data/keys && (cd /data/keys && allora-keys)"
 
 # Membuat Worker Keys
 sudo docker run -it --entrypoint=bash -v ./worker-data:/data alloranetwork/allora-inference-base:latest -c "mkdir -p /data/keys && (cd /data/keys && allora-keys)"
 ```
+- Tampilan Head Keys ID akan seperti ini, Simpan Head Keys ID tersebut, karena akan digunakan untuk tahap selanjutnya 
+![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/3e6be37f-21d9-4c62-8c83-22fd79483b8a)
+
 - Hapus existing app.py lalu buat kembali
 ```
 sudo rm -rf app.py && sudo nano app.py
@@ -525,22 +530,13 @@ werkzeug>=3.0.3 # not directly required, pinned by Snyk to avoid a vulnerability
 git+https://github.com/amazon-science/chronos-forecasting.git
 python-dotenv
 ```
-- Lihat Head Keys ID
-```
-cat head-data/keys/identity
-```
-![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/3e6be37f-21d9-4c62-8c83-22fd79483b8a)
 
-Simpan keys ID tersebut, karena akan digunakan untuk tahap selanjutnya
-
-#### Deploy Worker Node
+### Deploy Worker Node
 - Hapus existing docker compose lalu buat kembali
 ```
 rm -rf docker-compose.yml && nano docker-compose.yml
 ```
-- Setup Docker Compose
-
-Isi docker compose dengan kode di bawah. Perhatikan pada section worker ganti `head-id` dengan ID yang disimpan tadi dan `WALLET_SEED_PHRASE` dengan phrase wallet kalian
+- Isi docker compose dengan kode di bawah. Perhatikan pada section worker ganti `head-id` dengan ID yang disimpan tadi dan `WALLET_SEED_PHRASE` dengan phrase wallet kalian, kemudian simpan dengan memencet CTRL + X lalu pencet Y dan kemudian ENTER 
 
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/3b64f691-3695-409d-9823-8906403b0440)
 
@@ -563,7 +559,7 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/inference/btc"]
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 12
     volumes:
       - ./inference-data:/app/data
@@ -594,7 +590,7 @@ services:
           --topic=4 \
           --allora-chain-key-name=testkey \
           --allora-chain-restore-mnemonic='WALLET_SEED_PHRASE' \
-          --allora-node-rpc-address=https://allora-rpc.edgenet.allora.network/ --allora-chain-topic-id=4
+          --allora-node-rpc-address=https://allora-rpc.edgenet.allora.network/ --allora-chain-topic-id=allora-topic-4-worker
     volumes:
       - ./worker-data:/data
     working_dir: /data
@@ -648,35 +644,29 @@ volumes:
   worker-data:
   head-data:
 ```
-Simpan dengan memencet CTRL + X lalu pencet Y dan kemudian ENTER 
 - Run Worker node
-
-Build worker node
 ```
+# Build worker node
 docker compose build
-```
-Jalankan worker node
-```
+
+# Jalankan worker node
 docker compose up -d
 ```
 
-#### Monitoring Worker Node
-- Check docker container yang berjalan
+### Monitoring Worker Node
+- Check docker container yang berjalan dan ambil Container ID yang worker node (Hal ini bisa digunakan untuk mengecek node lain seperti head ataupun inference)
 ```
 docker ps
 ```
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/0ef3fde5-c5cf-4af1-983e-18af2fb8fbba)
-Ambil Container ID yang worker node
-- Check logs worker node
-
-Ganti `CONTAINER_ID` menjadi Container ID dari worker node
+- Check logs worker node dan ganti `CONTAINER_ID` menjadi Container ID dari worker node
 ```
 docker logs -f CONTAINER_ID
 ```
-Akan muncul tampilan seperti berikut, kalian bisa monitoring worker node seperti ada yang error pada node ataupun hanya sekedar mengecek kalau node masih berjalan
+- Akan muncul tampilan seperti berikut, kalian bisa monitoring worker node seperti ada yang error pada node ataupun hanya sekedar mengecek kalau node masih berjalan
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/8b17609d-7958-425e-8171-d272ddfbf9c7)
 
-#### Testing Request Worker Node
+### Testing Request Worker Node
 - Jalankan request messages dibawah ini
 ```
 curl --location 'http://localhost:6000/api/v1/functions/execute' --header 'Content-Type: application/json' --data '{
@@ -700,16 +690,16 @@ curl --location 'http://localhost:6000/api/v1/functions/execute' --header 'Conte
     }
 }'
 ```
-Jika mendapat output seperti gambar di bawah ini, selamat, node sudah berjalan dan terhubung ke Allora Network Chain
+- Jika mendapat output seperti gambar di bawah ini, selamat, node sudah berjalan dan terhubung ke Allora Network Chain
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/387a2881-3314-41cb-855d-fbb2f6c2d922)
 
 
 
-## Help
+# Help
 
 Join komunitas [Discord ZuperHunt](https://t.co/n7TeWVlA48) jika kamu ada pertanyaan.
 
-## Change Logs
+# Change Logs
 
 * 0.0.1
     * Initial Release
@@ -717,14 +707,20 @@ Join komunitas [Discord ZuperHunt](https://t.co/n7TeWVlA48) jika kamu ada pertan
     * Fix wrong embedded link
 * 0.0.3
     * Fix switched heading title
-* 0.04
+* 0.0.4
     * Fix APT update command
     * Add golang check version
     * Fix switched heading title (Again!!!)
-* 0.05
+* 0.0.5
     * Add description model used
+* 0.1.0
+    * Add command move to root directory
+    * Update Allora Appchain CLI Version
+    * Add check balance version
+    * Paraphrase some section
+    * Edit docker compose section to avoid 408 error
 
-## Acknowledgments
+# Acknowledgments
 
 Referensi
 * [allora-testnet by 0xmoei](https://github.com/0xmoei/allora-testnet?tab=readme-ov-file)
