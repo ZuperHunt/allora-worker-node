@@ -255,10 +255,10 @@ services:
           --runtime-path=/app/runtime --runtime-cli=bls-runtime --workspace=/data/workspace \
           --private-key=/data/keys/priv.bin --log-level=debug --port=9011 \
           --boot-nodes=/ip4/172.22.0.100/tcp/9010/p2p/head-id \
-          --topic=1 \
+          --topic=allora-topic-1-worker \
           --allora-chain-key-name=testkey \
           --allora-chain-restore-mnemonic='WALLET_SEED_PHRASE' \
-          --allora-node-rpc-address=https://allora-rpc.edgenet.allora.network/ --allora-chain-topic-id=allora-topic-1-worker
+          --allora-node-rpc-address=https://allora-rpc.edgenet.allora.network/ --allora-chain-topic-id=1
     volumes:
       - ./worker-data:/data
     working_dir: /data
@@ -587,10 +587,10 @@ services:
           --runtime-path=/app/runtime --runtime-cli=bls-runtime --workspace=/data/workspace \
           --private-key=/data/keys/priv.bin --log-level=debug --port=9011 \
           --boot-nodes=/ip4/172.22.0.100/tcp/9010/p2p/head-id \
-          --topic=4 \
+          --topic=allora-topic-4-worker \
           --allora-chain-key-name=testkey \
           --allora-chain-restore-mnemonic='WALLET_SEED_PHRASE' \
-          --allora-node-rpc-address=https://allora-rpc.edgenet.allora.network/ --allora-chain-topic-id=allora-topic-4-worker
+          --allora-node-rpc-address=https://allora-rpc.edgenet.allora.network/ --allora-chain-topic-id=4
     volumes:
       - ./worker-data:/data
     working_dir: /data
@@ -719,6 +719,8 @@ Join komunitas [Discord ZuperHunt](https://t.co/n7TeWVlA48) jika kamu ada pertan
     * Add check balance version
     * Paraphrase some section
     * Edit docker compose section to avoid 408 error
+* 0.1.1
+    * Fix wrong value on docker-compose section
 
 # Acknowledgments
 
