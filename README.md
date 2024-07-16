@@ -35,39 +35,41 @@ Syarat menjalankan Allora Worker Node:
 ## Dependencies
 Hal yang diperlukan sebelum menjalankan worker node:
 
-### Docker
+### APT
 #### Update APT
 ```
-# Masuk ke user root
-su root
+# Update APT
+sudo apt-get update
 
-# Pindah ke direktori root
-cd
+# Install package yang diperlukan untuk instalasi docker
+sudo apt-get install -y apt-transport-https software-properties-common ca-certificates zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev curl git wget make jq build-essential pkg-config lsb-release libssl-dev libreadline-dev libffi-dev gcc screen unzip lz4 
+```
+### Docker
+#### Install Docker
+```
+# Tambah Docker GPG key
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Tambah repository Docker ke APT
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # Update APT
 sudo apt-get update
 
-# Install mmake dan gcc
-sudo apt-get install -y make gcc
-
-# Install package yang diperlukan untuk instalasi docker
-sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
-```
-#### Install Docker
-```
-# Download dan tambahkan GPG key Docker ke APT
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-
-# Tambah repository Docker ke APT
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-
-# Check versi yang tersedia pada Docker yang ingin di-install
-apt-cache policy docker-ce
-
 # Install Docker
-sudo apt install docker-ce -y
-```
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+# Tambah Docker Permission ke user
+sudo groupadd docker && sudo usermod -aG docker $USER
+
+# Check versi Docker
+docker version
+```
 ### GoLang
 #### Install GoLang
 ```
@@ -81,12 +83,11 @@ curl -L https://go.dev/dl/go1.22.4.linux-amd64.tar.gz | sudo tar -xzf - -C /usr/
 echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> $HOME/.bash_profile && echo 'export PATH=$PATH:$(go env GOPATH)/bin' >> $HOME/.bash_profile
 
 # Memuat ulang file .bash_profile ke dalam sesi shell saat ini
-source .bash_profile
+source $HOME/.bash_profile
 
 # Check versi GoLang untuk memastikan kalau sudah terinstall
 go version
 ```
-
 ### Python
 > [!NOTE]
 > Beberapa sistem operasi sudah terinstall Python secara default, check terlebih dahulu menggunakan `python3 --version` atau `python --version`, jika terdapat output versi dari Python maka Python sudah terinstall di sistem operasi anda dan dapat skip tahap ini
@@ -98,7 +99,6 @@ sudo apt install python3
 # Check versi Python untuk memastikan kalau sudah terinstall
 python3 --version
 ```
-
 ### PIP
 #### Install PIP
 ```
@@ -108,18 +108,14 @@ sudo apt install python3-pip
 # Check versi PIP untuk memastikan kalau sudah terinstall
 pip3 --version
 ```
-
 ### Allora Appchain CLI
 #### Install Allora Appchain CLI
 ```
 # Clone repository Allora Appchain CLI
-git clone -b v0.2.14 https://github.com/allora-network/allora-chain.git
+git clone https://github.com/allora-network/allora-chain.git
 
 # Install Allora Appchain CLI
 cd allora-chain && make all
-
-# Keluar dari folder repository Allora Appchain CLI
-cd
 
 # Check versi dari Allora Appchain CLI
 allorad version
@@ -134,34 +130,30 @@ Ada dua campaign worker node yang dapat dikerjakan sekarang
 > Tutorial ini akan melingkupi cara mengerjakan dua campaign tersebut, tetapi tidak disarankan untuk dijalankan pada VPS/Local yang sama sekaligus, gunakan 1 VPS untuk 1 campaign
 
 ## Allora Worker Node for Run A Model Predicting Prices In The Next 24 Hours Campaign
-
 ### Tambah Wallet ke Allora Appchain CLI
 - Recover wallet kalau kalian punya wallet phrasenya
 ```
-allorad keys add --recover IsiPakeNamaWalletElo
+allorad keys add --recover IsiPakeNamaWalletElo --keyring-backend file
 ```
 - Buat baru kalau tidak punya wallet phrasenya (JANGAN LUPA SIMPAN MNEMONIC PHRASENYA!!!)
 ```
-allorad keys add IsiPakeNamaWalletElo
+allorad keys add IsiPakeNamaWalletElo --keyring-backend file
 ```
-
 ### Ambil Faucet
-- Check address kamu dengan menjalankan command ini
+- Check address Allora kamu dengan menjalankan command ini
 ```
 allorad keys list
 ```
 - Pergi ke [sini](https://faucet.edgenet.allora.network/) untuk faucet token
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/f71f5c54-3556-4ca8-91e8-1f4fa5546bad)
-
 - Cek Balance dengan Import mnemonic phrasenya ke wallet IBC, disini saya menggunakan Keplr lalu connect ke [explorer](https://explorer.edgenet.allora.network/allora-edgenet)
 ![image](https://github.com/user-attachments/assets/b936df8a-4a58-457e-b05e-d8eb9c187de8)
-
 ### Install Worker Node
 ```
 # Clone repository yang akan menjadi basis node kita
 cd $HOME && git clone https://github.com/allora-network/basic-coin-prediction-node
 
-# Buat direktori untuk node worker
+# Buat direktori untuk node worker dan head
 cd basic-coin-prediction-node && mkdir worker-data && mkdir head-data
 
 # Beri izin modifikasi untuk direktorinya
@@ -206,7 +198,7 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/inference/ETH"]
       interval: 10s
-      timeout: 10s
+      timeout: 5s
       retries: 12
     volumes:
       - ./inference-data:/app/data
@@ -315,13 +307,8 @@ volumes:
 ```
 - Run Worker node
 ```
-# Build worker node
-docker compose build
-
-# Jalankan worker node
-docker compose up -d
+docker compose build && docker compose up -d
 ```
-
 ### Monitoring Worker Node
 - Check docker container yang berjalan dan ambil Container ID yang worker node (Hal ini bisa digunakan untuk mengecek node lain seperti head ataupun inference)
 ```
@@ -357,7 +344,7 @@ curl --location 'http://localhost:6000/api/v1/functions/execute' \
             }
         ],
         "number_of_nodes": -1,
-        "timeout": 10
+        "timeout": 2
     }
 }'
 ```
@@ -365,17 +352,15 @@ curl --location 'http://localhost:6000/api/v1/functions/execute' \
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/066bc481-e939-4261-8d73-343707976d27)
 
 ## Allora Worker Node for Run A Model Predicting Prices In The Next 10 minutes Campaign
-
 ### Tambah Wallet ke Allora Appchain CLI
 - Recover wallet kalau kalian punya wallet phrasenya
 ```
-allorad keys add --recover IsiPakeNamaWalletElo
+allorad keys add --recover IsiPakeNamaWalletElo --keyring-backend file
 ```
 - Buat baru kalau tidak punya wallet phrasenya (JANGAN LUPA SIMPAN MNEMONIC PHRASENYA!!!)
 ```
-allorad keys add IsiPakeNamaWalletElo
+allorad keys add IsiPakeNamaWalletElo --keyring-backend file
 ```
-
 ### Ambil Faucet
 - Check address kamu dengan menjalankan command ini
 ```
@@ -383,16 +368,14 @@ allorad keys list
 ```
 - Pergi ke [sini](https://faucet.edgenet.allora.network/) untuk faucet token
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/f71f5c54-3556-4ca8-91e8-1f4fa5546bad)
-
 - Cek Balance dengan Import mnemonic phrasenya ke wallet IBC, disini saya menggunakan Keplr lalu connect ke [explorer](https://explorer.edgenet.allora.network/allora-edgenet)
 ![image](https://github.com/user-attachments/assets/b936df8a-4a58-457e-b05e-d8eb9c187de8)
-
 ### Install Worker Node
 ```
 # Clone repository yang akan menjadi basis node kita
 cd $HOME && git clone https://github.com/allora-network/basic-coin-prediction-node
 
-# Buat direktori untuk node worker
+# Buat direktori untuk node worker dan head
 cd basic-coin-prediction-node && mkdir worker-data && mkdir head-data
 
 # Beri izin modifikasi untuk direktorinya
@@ -404,15 +387,17 @@ sudo docker run -it --entrypoint=bash -v ./head-data:/data alloranetwork/allora-
 
 # Membuat Worker Keys
 sudo docker run -it --entrypoint=bash -v ./worker-data:/data alloranetwork/allora-inference-base:latest -c "mkdir -p /data/keys && (cd /data/keys && allora-keys)"
+
+# Lihat Head Keys ID
+cat head-data/keys/identity
 ```
 - Tampilan Head Keys ID akan seperti ini, Simpan Head Keys ID tersebut, karena akan digunakan untuk tahap selanjutnya 
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/3e6be37f-21d9-4c62-8c83-22fd79483b8a)
-
 - Hapus existing app.py lalu buat kembali
 ```
 sudo rm -rf app.py && sudo nano app.py
 ```
-- Isi app.py dengan kode berikut
+- Isi app.py dengan kode berikut, kemudian simpan dengan memencet CTRL + X lalu pencet Y dan kemudian ENTER 
 ```
 from flask import Flask, Response
 import requests
@@ -484,7 +469,7 @@ if __name__ == '__main__':
 ```
 sudo rm -rf main.py && sudo nano main.py
 ```
-- Isi main.py dengan kode berikut
+- Isi main.py dengan kode berikut, kemudian simpan dengan memencet CTRL + X lalu pencet Y dan kemudian ENTER 
 ```
 import requests
 import sys
@@ -518,7 +503,7 @@ if __name__ == "__main__":
 ```
 sudo rm -rf requirements.txt && sudo nano requirements.txt
 ```
-- Isi requirements.txt dengan kode berikut
+- Isi requirements.txt dengan kode berikut, kemudian simpan dengan memencet CTRL + X lalu pencet Y dan kemudian ENTER 
 ```
 flask[async]
 gunicorn[gthread]
@@ -530,16 +515,13 @@ werkzeug>=3.0.3 # not directly required, pinned by Snyk to avoid a vulnerability
 git+https://github.com/amazon-science/chronos-forecasting.git
 python-dotenv
 ```
-
 ### Deploy Worker Node
 - Hapus existing docker compose lalu buat kembali
 ```
 rm -rf docker-compose.yml && nano docker-compose.yml
 ```
 - Isi docker compose dengan kode di bawah. Perhatikan pada section worker ganti `head-id` dengan ID yang disimpan tadi dan `WALLET_SEED_PHRASE` dengan phrase wallet kalian, kemudian simpan dengan memencet CTRL + X lalu pencet Y dan kemudian ENTER 
-
 ![image](https://github.com/ZuperHunt/Allora-Worker-Node/assets/92942194/3b64f691-3695-409d-9823-8906403b0440)
-
 ```
 version: '3'
 
@@ -557,9 +539,9 @@ services:
           - inference
         ipv4_address: 172.22.0.4
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/inference/btc"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/inference/BTC"]
       interval: 10s
-      timeout: 10s
+      timeout: 5s
       retries: 12
     volumes:
       - ./inference-data:/app/data
@@ -646,13 +628,8 @@ volumes:
 ```
 - Run Worker node
 ```
-# Build worker node
-docker compose build
-
-# Jalankan worker node
-docker compose up -d
+docker compose build && docker compose up -d
 ```
-
 ### Monitoring Worker Node
 - Check docker container yang berjalan dan ambil Container ID yang worker node (Hal ini bisa digunakan untuk mengecek node lain seperti head ataupun inference)
 ```
@@ -699,6 +676,8 @@ curl --location 'http://localhost:6000/api/v1/functions/execute' --header 'Conte
 
 Join komunitas [Discord ZuperHunt](https://t.co/n7TeWVlA48) jika kamu ada pertanyaan.
 
+
+
 # Change Logs
 
 * 0.0.1
@@ -721,6 +700,12 @@ Join komunitas [Discord ZuperHunt](https://t.co/n7TeWVlA48) jika kamu ada pertan
     * Edit docker compose section to avoid 408 error
 * 0.1.1
     * Fix wrong value on docker-compose section
+* 0.1.2
+    * Update dependencies
+    * Add missing description on node worker tutorial
+    * Update 408 error fix
+
+
 
 # Acknowledgments
 
