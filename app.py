@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # define the Hugging Face model we will use
 model_name = 'amazon/chronos-t5-tiny'
-
+TOPIC_COIN = 'bitcoin'
 
 # define our endpoint
 @app.route("/inference/<string:token>")
@@ -42,7 +42,7 @@ def get_inference(token):
             raise FileNotFoundError
 
     except FileNotFoundError:
-        url = 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily'
+        url = 'https://api.coingecko.com/api/v3/coins/'+TOPIC_COIN+'/market_chart?vs_currency=usd&days=30&interval=daily'
 
         headers = {
             "accept": "application/json",

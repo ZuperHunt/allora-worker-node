@@ -236,8 +236,8 @@ echo -e "${BOLD}${DARK_YELLOW}Adding app.py File to the Worker Node...${RESET}"
 execute_with_prompt "sudo rm -rf app.py"
 execute_with_prompt "wget https://raw.githubusercontent.com/ZuperHunt/Allora-Worker-Node/main/app.py"
 sed -i "s|model_name = 'amazon/chronos-t5-tiny'|model_name = 'amazon/$MODEL'|g" "app.py"
-sed -i "s|    if not token or token != 'BTC':|    if not token or token != '$TOPIC_TICKER':|g" "app.py"
-sed -i "s|        url = 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily'|        url = 'https://api.coingecko.com/api/v3/coins/$TOPIC_COIN/market_chart?vs_currency=usd&days=30&interval=daily'|g" "app.py"
+sed -i "s|if not token or token != 'BTC':|if not token or token != '$TOPIC_TICKER':|g" "app.py"
+sed -i "s|TOPIC_COIN = 'bitcoin'|TOPIC_COIN = '$TOPIC_COIN'|g" "app.py"
 
 # Add requirements.txt file to the worker node directory
 echo -e "${BOLD}${DARK_YELLOW}Adding requirements.txt File to the Worker Node...${RESET}"
