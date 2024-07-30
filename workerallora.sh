@@ -217,7 +217,7 @@ echo
 if [[ "$response_wallet" =~ ^[Yy]$ ]]; then
     # Add wallet seed phrase to Allorad keyring backend
     echo -e "${BOLD}${DARK_YELLOW}Adding Wallet Seed Phrase to Allorad Keyring Backend...${RESET}"
-    execute_with_prompt "allorad keys delete $WORKER_NAME --keyring-backend test -y"
+    execute_with_prompt "allorad keys delete $WORKER_NAME --keyring-backend test"
     echo
     echo -e "${BOLD}${DARK_YELLOW}Enter the Wallet Seed Phrase:${RESET}"
     execute_with_prompt "allorad keys add --recover $WORKER_NAME --keyring-backend test"
