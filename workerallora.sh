@@ -79,15 +79,17 @@ echo -e "${BOLD}${DARK_YELLOW}Checking docker version...${RESET}"
 execute_with_prompt 'docker version'
 echo
 
-# Install Golang
-echo -e "${BOLD}${DARK_YELLOW}Installing Golang...${RESET}"
-execute_with_prompt 'sudo rm -rf /usr/local/go'
-execute_with_prompt 'curl -L https://go.dev/dl/go1.22.4.linux-amd64.tar.gz | sudo tar -xzf - -C /usr/local'
-execute_with_prompt 'echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile && echo "export PATH=$PATH:$(go env GOPATH)/bin" >> $HOME/.bash_profile'
+# Install Go
+echo -e "${BOLD}${DARK_YELLOW}Installing Go...${RESET}"
+execute_with_prompt 'cd $HOME'
+execute_with_prompt 'ver="1.21.3" && wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"'
+execute_with_prompt 'sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"'
+execute_with_prompt 'rm "go$ver.linux-amd64.tar.gz"'
+execute_with_prompt 'echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile'
 execute_with_prompt 'source $HOME/.bash_profile'
 echo
 sleep 2
-echo -e "${BOLD}${DARK_YELLOW}Checking Golang version...${RESET}"
+echo -e "${BOLD}${DARK_YELLOW}Checking Go version...${RESET}"
 execute_with_prompt 'go version'
 echo
 
@@ -205,7 +207,7 @@ echo
 
 # Change directory to Allora Worker Node
 echo -e "${BOLD}${DARK_YELLOW}Changing Directory to Allora Worker Node...${RESET}"
-execute_with_prompt "cd $WORKER_NAME"
+execute_with_prompt "cd $WORKER_NAME/worker"
 echo
 
 # Check if the user has seed phrase, exit if not
@@ -220,17 +222,18 @@ if [[ "$response_wallet" =~ ^[Yy]$ ]]; then
     echo -e "${BOLD}${DARK_YELLOW}Enter the Wallet Seed Phrase:${RESET}"
     execute_with_prompt "allorad keys add --recover $WORKER_NAME --keyring-backend test"
     echo
-elif [ "$response_wallet" =~ ^[Nn]$ ]; then
+elif [[ "$response_wallet" =~ ^[Nn]$ ]]; then
     # Show the default wallet seed phrase
     echo -e "${BOLD}${DARK_YELLOW}This is your default wallet, save the mnemonic phrase in a safe place and fill the wallet with ALLO on the faucet${RESET}"
     execute_with_prompt "allorad keys list --keyring-backend test"
     execute_with_prompt "sed -n '11,13p' config.yaml"
-    echo -e "${CYAN}Have you saved your Wallet Seed Phrase? (Y/N):${RESET}"
+    echo -e "${CYAN}Press any key to continue deploying your node${RESET}"
     read -p "" response
 fi
 
 # Add app.py file to the worker node directory
 echo -e "${BOLD}${DARK_YELLOW}Adding app.py File to the Worker Node...${RESET}"
+execute_with_prompt "sudo rm -rf app.py"
 execute_with_prompt "wget https://raw.githubusercontent.com/ZuperHunt/Allora-Worker-Node/main/app.py"
 replace_code "app.py" "model_name = 'amazon/$MODEL'" "model_name = 'amazon/chronos-t5-tiny'"
 replace_code "app.py" "    if not token or token != '$TOPIC_TICKER':" "    if not token or token != 'BTC':"
@@ -238,33 +241,56 @@ replace_code "app.py" "        url = 'https://api.coingecko.com/api/v3/coins/$TO
 
 # Add requirements.txt file to the worker node directory
 echo -e "${BOLD}${DARK_YELLOW}Adding requirements.txt File to the Worker Node...${RESET}"
+execute_with_prompt "sudo rm -rf requirements.txt"
 execute_with_prompt "wget https://raw.githubusercontent.com/ZuperHunt/Allora-Worker-Node/main/requirements.txt"
 
 # Add main.py file to the worker node directory
 echo -e "${BOLD}${DARK_YELLOW}Adding main.py File to the Worker Node...${RESET}"
+execute_with_prompt "sudo rm -rf main.py"
 execute_with_prompt "wget https://raw.githubusercontent.com/ZuperHunt/Allora-Worker-Node/main/main.py"
 
 # Add Dockerfile file to the worker node directory
 echo -e "${BOLD}${DARK_YELLOW}Adding Dockerfile File to the Worker Node...${RESET}"
+execute_with_prompt "sudo rm -rf Dockerfile"
 execute_with_prompt "wget https://raw.githubusercontent.com/ZuperHunt/Allora-Worker-Node/main/Dockerfile"
 
 # Add Dockerfile_inference file to the worker node directory
 echo -e "${BOLD}${DARK_YELLOW}Adding Dockerfile_inference File to the Worker Node...${RESET}"
+execute_with_prompt "sudo rm -rf Dockerfile_inference"
 execute_with_prompt "wget https://raw.githubusercontent.com/ZuperHunt/Allora-Worker-Node/main/Dockerfile_inference"
 
 if [[ "$response_wallet" =~ ^[Yy]$ ]]; then
     # Update wallet address and mnemonic config.yaml file
     echo -e "${BOLD}${DARK_YELLOW}Updating config.yaml File...${RESET}"
-    WALLET_ADDRESS = $(allorad keys list --keyring-backend test | grep -oP '(?<=address: ).*')
+    WALLET_ADDRESS=$(allorad keys list --keyring-backend test | grep -oP '(?<=address: ).*')
     execute_with_prompt "sed -i '/  address:/c\\  address: $WALLET_ADDRESS' 'config.yaml'"
-    HEX_KEY = $(allorad keys export $WORKER_NAME --keyring-backend test --unarmored-hex --unsafe)
+    HEX_KEY=$(allorad keys export $WORKER_NAME --keyring-backend test --unarmored-hex --unsafe)
     execute_with_prompt "sed -i '/  hex_coded_pk:/c\\  hex_coded_pk: $HEX_KEY' 'config.yaml'"
     echo -e "${BOLD}${DARK_YELLOW}Input your Mnemonic Phrase: {RESET}"
     read -p "" MNEMONIC_PHRASE
     execute_with_prompt "sed -i '/  mnemonic:/c\\  mnemonic: $MNEMONIC_PHRASE' 'config.yaml'"
-elif [ "$response_wallet" =~ ^[Nn]$ ]; then
+elif [[ "$response_wallet" =~ ^[Nn]$ ]]; then
     # Update wallet address and mnemonic config.yaml file
     echo -e "${BOLD}${DARK_YELLOW}Updating config.yaml File...${RESET}"
-    HEX_KEY = $(allorad keys export $WORKER_NAME --keyring-backend test --unarmored-hex --unsafe)
-    execute_with_prompt "sed -i '/  hex_coded_pk:/c\\  hex_coded_pk: $HEX_KEY' 'config.yaml'"
+    HEX_KEY=$(allorad keys export $WORKER_NAME --keyring-backend test --unarmored-hex --unsafe)
+    sed -i "/  hex_coded_pk:/c\\  hex_coded_pk: '$HEX_KEY'" "config.yaml"
 fi
+
+# Update dev-docker-compose.yaml file
+echo -e "${BOLD}${DARK_YELLOW}Updating dev-docker-compose.yaml File...${RESET}"
+new_lines="  inference:\n    container_name: inference-hf\n    build:\n      context: .\n      dockerfile: Dockerfile_inference\n    command: python -u /app/app.py\n    ports:\n      - \"8000:8000\"\n    networks:\n      b7s-local:\n        aliases:\n          - inference\n        ipv4_address: 172.19.0.4"
+sed -i "/services:/a\\
+$new_lines" "dev-docker-compose.yaml"
+
+# Move Worker Node to production mode
+echo -e "${BOLD}${DARK_YELLOW}Move Worker Node to Production Mode...${RESET}"
+execute_with_prompt "allocmd generate worker --env prod --network allora-testnet-1"
+
+# Update prod-docker-compose.yaml file
+echo -e "${BOLD}${DARK_YELLOW}Updating prod-docker-compose.yaml File...${RESET}"
+new_lines="  inference:\n    container_name: inference-hf\n    build:\n      context: .\n      dockerfile: Dockerfile_inference\n    command: python -u /app/app.py\n    ports:\n      - \"8000:8000\"\n"
+sed -i "/services:/a\\
+$new_lines" "prod-docker-compose.yaml"
+
+echo -e "${BOLD}${DARK_YELLOW}Allora Worker Node Setup Completed...${RESET}"
+echo
