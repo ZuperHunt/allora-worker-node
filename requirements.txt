@@ -1,0 +1,6 @@
+requests
+flask[async]
+gunicorn[gthread]
+transformers[torch]
+pandas
+git+https://github.com/amazon-science/chronos-forecasting.git
