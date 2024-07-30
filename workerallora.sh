@@ -285,6 +285,8 @@ $new_lines" "dev-docker-compose.yaml"
 # Move Worker Node to production mode
 echo -e "${BOLD}${DARK_YELLOW}Move Worker Node to Production Mode...${RESET}"
 execute_with_prompt "allocmd generate worker --env prod --network allora-testnet-1"
+chmod -R +rx ./data/scripts
+chmod +x ./update-node-ip.sh
 
 # Update prod-docker-compose.yaml file
 echo -e "${BOLD}${DARK_YELLOW}Updating prod-docker-compose.yaml File...${RESET}"
