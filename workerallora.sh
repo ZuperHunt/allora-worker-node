@@ -266,7 +266,7 @@ if [[ "$response_wallet" =~ ^[Yy]$ ]]; then
     execute_with_prompt "sed -i '/  address:/c\\  address: $WALLET_ADDRESS' 'config.yaml'"
     HEX_KEY=$(allorad keys export $WORKER_NAME --keyring-backend test --unarmored-hex --unsafe)
     execute_with_prompt "sed -i '/  hex_coded_pk:/c\\  hex_coded_pk: $HEX_KEY' 'config.yaml'"
-    echo -e "${BOLD}${DARK_YELLOW}Input your Mnemonic Phrase: {RESET}"
+    echo -e "${BOLD}${DARK_YELLOW}Input your Mnemonic Phrase: ${RESET}"
     read -p "" MNEMONIC_PHRASE
     execute_with_prompt "sed -i '/  mnemonic:/c\\  mnemonic: $MNEMONIC_PHRASE' 'config.yaml'"
 elif [[ "$response_wallet" =~ ^[Nn]$ ]]; then

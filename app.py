@@ -33,7 +33,7 @@ def get_inference(token):
     current_date = datetime.now().date()
 
     try:
-        df = pd.read_csv('bitcoin_prices.csv')
+        df = pd.read_csv('prices.csv')
         last_date = pd.to_datetime(df['date'].iloc[-1]).date()
         if last_date == current_date:
             print("Data for today already exists. Skipping API call.")
