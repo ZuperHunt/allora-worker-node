@@ -82,7 +82,7 @@ echo
 # Install Go
 echo -e "${BOLD}${DARK_YELLOW}Installing Go...${RESET}"
 execute_with_prompt 'cd $HOME'
-execute_with_prompt 'ver="1.21.3" && wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"'
+execute_with_prompt 'ver="1.22.4" && wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"'
 execute_with_prompt 'sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"'
 execute_with_prompt 'rm "go$ver.linux-amd64.tar.gz"'
 execute_with_prompt 'echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile'
