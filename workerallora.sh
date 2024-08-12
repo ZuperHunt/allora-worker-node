@@ -120,6 +120,17 @@ echo -e "${BOLD}${DARK_YELLOW}Checking Allocmd version...${RESET}"
 execute_with_prompt 'allocmd --version'
 echo
 
+# Install Allorad
+echo -e "${BOLD}${DARK_YELLOW}Installing Allorad...${RESET}"
+execute_with_prompt 'git clone -b v0.3.0 https://github.com/allora-network/allora-chain.git'
+execute_with_prompt 'cd allora-chain && make all'
+echo
+sleep 2
+echo -e "${BOLD}${DARK_YELLOW}Checking Allorad version...${RESET}"
+execute_with_prompt 'allorad version'
+execute_with_prompt 'cd $HOME'
+echo
+
 # Choose topic and name for worker node
 echo -e "${BOLD}${DARK_YELLOW}Choose a Topic for the Worker Node:${RESET}"
 echo
@@ -265,10 +276,10 @@ if [[ "$response_wallet" =~ ^[Yy]$ ]]; then
     WALLET_ADDRESS=$(allorad keys list --keyring-backend test | grep -oP '(?<=address: ).*')
     execute_with_prompt "sed -i '/  address:/c\\  address: $WALLET_ADDRESS' 'config.yaml'"
     HEX_KEY=$(allorad keys export $WORKER_NAME --keyring-backend test --unarmored-hex --unsafe)
-    execute_with_prompt "sed -i '/  hex_coded_pk:/c\\  hex_coded_pk: $HEX_KEY' 'config.yaml'"
+    sed -i "/  hex_coded_pk:/c\\  hex_coded_pk: '$HEX_KEY'" "config.yaml"
     echo -e "${BOLD}${DARK_YELLOW}Input your Mnemonic Phrase: ${RESET}"
     read -p "" MNEMONIC_PHRASE
-    execute_with_prompt "sed -i '/  mnemonic:/c\\  mnemonic: $MNEMONIC_PHRASE' 'config.yaml'"
+    sed -i "/mnemonic:/,/topic_id:/ { /mnemonic:/c\mnemonic: $MNEMONIC_PHRASE" -e "/topic_id:/!d; }" "config.yaml"
 elif [[ "$response_wallet" =~ ^[Nn]$ ]]; then
     # Update wallet address and mnemonic config.yaml file
     echo -e "${BOLD}${DARK_YELLOW}Updating config.yaml File...${RESET}"
